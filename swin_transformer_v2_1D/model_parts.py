@@ -72,11 +72,10 @@ def unfold(input: torch.Tensor,
 
 def fold(input: torch.Tensor,
          window_size: int,
-         height: int,
-         width: int) -> torch.Tensor:
+         length: int) -> torch.Tensor:
     """
     Fold a tensor of windows again to a 4D feature map
-    :param input: (torch.Tensor) Input tensor of windows [batch size * windows, channels, window size, window size]
+    :param input: (torch.Tensor) Input tensor of windows [batch size * windows, channels, window size]
     :param window_size: (int) Window size to be reversed
     :param height: (int) Height of the feature map
     :param width: (int) Width of the feature map
@@ -85,11 +84,10 @@ def fold(input: torch.Tensor,
     # Get channels of windows
     channels: int = input.shape[1]
     # Get original batch size
-    batch_size: int = int(input.shape[0] // (height * width // window_size // window_size))
+    batch_size: int = int(input.shape[0] // (length // window_size))
     # Reshape input to
-    output: torch.Tensor = input.view(batch_size, height // window_size, width // window_size, channels,
-                                      window_size, window_size)
-    output: torch.Tensor = output.permute(0, 3, 1, 4, 2, 5).reshape(batch_size, channels, height, width)
+    output: torch.Tensor = input.view(batch_size, length // window_size, channels, window_size)
+    output: torch.Tensor = output.permute(0, 3, 1, 2).reshape(batch_size, channels, length)
     return output
 
 
